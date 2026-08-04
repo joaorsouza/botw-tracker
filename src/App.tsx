@@ -2,7 +2,8 @@ import { useState, useEffect, type Dispatch, type SetStateAction } from 'react';
 import { Trophy, Sparkles } from 'lucide-react';
 import REGION_DATA from './data/regions';
 import { MAIN_QUESTS, DIVINE_BEASTS, DLC, TOTALS } from './data/gameData';
-import type { BoolMap, RegionCounts, RegionsState } from './types';
+import { KOROKS_BY_REGION } from './data/koroks';
+import type { BoolMap, Region, RegionCounts, RegionsState } from './types';
 import Section from './components/Section';
 import CheckRow from './components/CheckRow';
 import RegionSection from './components/RegionSection';
@@ -14,6 +15,7 @@ export default function App() {
   const [dlc, setDlc] = useState<BoolMap>({});
   const [regionCounts, setRegionCounts] = useState<RegionCounts>({});
   const [regions, setRegions] = useState<RegionsState>({});
+  const [korokChecks, setKorokChecks] = useState<RegionsState>({});
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -26,6 +28,7 @@ export default function App() {
         setDlc(data.dlc || {});
         setRegionCounts(data.regionCounts || {});
         setRegions(data.regions || {});
+        setKorokChecks(data.koroks || {});
       }
     } catch {
       // no saved data yet, that's fine
@@ -36,12 +39,12 @@ export default function App() {
   useEffect(() => {
     if (!loaded) return;
     try {
-      localStorage.setItem('botw-progress', JSON.stringify({ mainQuests, beasts, dlc, regionCounts, regions }));
+      localStorage.setItem('botw-progress', JSON.stringify({ mainQuests, beasts, dlc, regionCounts, regions, koroks: korokChecks }));
       setError(null);
     } catch (e) {
       setError('Não consegui salvar o progresso agora: ' + (e instanceof Error ? e.message : String(e)));
     }
-  }, [mainQuests, beasts, dlc, regionCounts, regions, loaded]);
+  }, [mainQuests, beasts, dlc, regionCounts, regions, korokChecks, loaded]);
 
   const toggle = (setter: Dispatch<SetStateAction<BoolMap>>, state: BoolMap, id: string) =>
     setter({ ...state, [id]: !state[id] });
@@ -60,13 +63,26 @@ export default function App() {
     }));
   };
 
+  const toggleKorok = (regionId: string, korokId: string) =>
+    setKorokChecks(prev => ({
+      ...prev,
+      [regionId]: { ...prev[regionId], [korokId]: !prev[regionId]?.[korokId] },
+    }));
+
+  // Contagem efetiva de koroks: se a região tem algum korok marcado no checklist,
+  // vale o checklist; senão, vale o número digitado manualmente.
+  const effectiveKoroks = (r: Region) => {
+    const checked = (KOROKS_BY_REGION[r.id] || []).filter(s => korokChecks[r.id]?.[s.id]).length;
+    return checked > 0 ? checked : (regionCounts[r.key]?.koroks || 0);
+  };
+
   const totalShrines = REGION_DATA.reduce(
     (sum, r) => sum + r.shrines.filter(s => regions[r.id]?.[s.id]).length, 0
   );
   const totalSidequests = REGION_DATA.reduce(
     (sum, r) => sum + r.sidequests.filter(q => regions[r.id]?.[q.id]).length, 0
   );
-  const totalKoroks = REGION_DATA.reduce((sum, r) => sum + (regionCounts[r.key]?.koroks || 0), 0);
+  const totalKoroks = REGION_DATA.reduce((sum, r) => sum + effectiveKoroks(r), 0);
 
   const mainDone = MAIN_QUESTS.filter(q => mainQuests[q.id]).length;
   const dlcDone = DLC.filter(d => dlc[d.id]).length;
@@ -87,7 +103,7 @@ export default function App() {
           <h1 className="text-2xl md:text-3xl font-bold text-amber-200 tracking-wide mb-1">
             Breath of the Wild — 100%
           </h1>
-          <p className="text-stone-400 text-sm">Progresso salvo neste navegador</p>
+          <p className="text-stone-400 text-sm"> VERSÃO BETA - Progresso salvo neste navegador</p>
         </div>
 
         <div className="bg-gradient-to-r from-amber-900/40 to-emerald-900/40 border border-amber-700/40 rounded-lg p-4 mb-5">
@@ -133,7 +149,10 @@ export default function App() {
             region={region}
             state={regions[region.id] || {}}
             onToggleItem={itemId => toggleRegionItem(region.id, itemId)}
-            korokCount={regionCounts[region.key]?.koroks || 0}
+            korokSeeds={KOROKS_BY_REGION[region.id] || []}
+            korokChecks={korokChecks[region.id] || {}}
+            onToggleKorok={korokId => toggleKorok(region.id, korokId)}
+            manualKorokCount={regionCounts[region.key]?.koroks || 0}
             onKorokChange={v => setKoroks(region.key, v)}
           />
         ))}

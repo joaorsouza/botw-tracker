@@ -6,6 +6,7 @@ const tabantha: Region = {
   name: 'Tabantha',
   description: 'Cobre as regiões das torres Tabantha e Ridgeland: Rito Village e a Tabantha Frontier no noroeste, mais o Hyrule Ridge com seus estábulos e planícies a caminho do castelo. Terra dos Rito, do Divine Beast Vah Medoh e de muita tempestade no Thundra Plateau.',
   koroksTotal: 117,
+  mapPos: { x: -2685, z: -882, zoom: 3 },
   towers: [
     {
       id: 'tower_tabantha',
@@ -171,12 +172,6 @@ const tabantha: Region = {
       id: 'thundra_plateau',
       name: 'Thundra Plateau',
       detail: 'Platô a oeste da Ridgeland Tower castigado por uma tempestade elétrica eterna. Guarde o equipamento de metal, cuidado com os wizzrobes e resolva o puzzle dos quatro orbes coloridos (shrine quest Trial of Thunder) pra revelar o santuário Toh Yahsa. O baú com a Rubber Armor fica na entrada do santuário.',
-    },
-    {
-      id: 'tabantha_koroks_guide',
-      name: 'Koroks da região',
-      sub: 'Use o contador da região + mapa interativo',
-      detail: 'São centenas espalhados — inviável listar um a um. Use o mapa interativo objmap.zeldadungeon.net (camada Korok Seeds) e marque no contador abaixo conforme coletar.',
     },
   ],
 }

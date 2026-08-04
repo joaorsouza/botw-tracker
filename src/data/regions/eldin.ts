@@ -6,6 +6,7 @@ const eldin: Region = {
   name: 'Eldin',
   description: 'Região da Eldin Tower — Death Mountain, Goron City e o Eldin Canyon, a terra vulcânica dos Gorons. Calor extremo: sem proteção contra fogo você literalmente pega fogo nas áreas altas, armas de madeira queimam e bombas explodem sozinhas.',
   koroksTotal: 45,
+  mapPos: { x: 2174, z: -1557, zoom: 4 },
   towers: [
     {
       id: 'tower_eldin',
@@ -110,12 +111,6 @@ const eldin: Region = {
       name: 'Gut Check Rock — desafio Goron',
       sub: 'Escalada do Bayge (libera o santuário Gorae Torr)',
       detail: 'No topo do Gut Check Rock, o pilar gigante ao norte da Death Mountain, o Goron Bayge te desafia a escalar coletando 100 rupees em cristais antes do tempo acabar. Roupa de escalada e comida de stamina ajudam muito; os cristais marcam a rota. Vencer libera o santuário Gorae Torr lá em cima — marque os dois juntos.',
-    },
-    {
-      id: 'eldin_koroks_guide',
-      name: 'Koroks da região',
-      sub: 'Use o contador da região + mapa interativo',
-      detail: 'São centenas espalhados — inviável listar um a um. Use o mapa interativo objmap.zeldadungeon.net (camada Korok Seeds) e marque no contador abaixo conforme coletar.',
     },
   ],
 }

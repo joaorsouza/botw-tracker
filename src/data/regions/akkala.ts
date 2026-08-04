@@ -6,6 +6,7 @@ const akkala: Region = {
   name: 'Akkala',
   description: 'Região da torre Akkala, no extremo nordeste de Hyrule — cobre as Akkala Highlands, Tarrey Town, a Deep Akkala (com o Skull Lake) e a Lomei Labyrinth Island. Terra de outono eterno, com a Akkala Citadel em ruínas, dois estábulos e o Akkala Ancient Tech Lab.',
   koroksTotal: 58,
+  mapPos: { x: 3308, z: -1500, zoom: 4 },
   towers: [
     {
       id: 'tower_akkala',
@@ -123,12 +124,6 @@ const akkala: Region = {
       name: 'Akkala Ancient Tech Lab',
       sub: 'Robbie — ponta nordeste da Deep Akkala',
       detail: 'Laboratório do Robbie, no fim da estrada que sobe do East Akkala Stable. Pra ativar tudo, complete Robbie\'s Research levando a chama azul da fornalha ancestral até o laboratório com uma tocha (acenda os lampiões do caminho como checkpoints e evite a chuva). Com a fornalha acesa, a Cherry vende flechas e equipamentos ancient — essenciais contra Guardians.',
-    },
-    {
-      id: 'akkala_koroks_guide',
-      name: 'Koroks da região',
-      sub: 'Use o contador da região + mapa interativo',
-      detail: 'São centenas espalhados — inviável listar um a um. Use o mapa interativo objmap.zeldadungeon.net (camada Korok Seeds) e marque no contador abaixo conforme coletar.',
     },
   ],
 }

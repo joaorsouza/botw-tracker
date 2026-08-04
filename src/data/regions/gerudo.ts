@@ -7,6 +7,7 @@ const gerudo: Region = {
   description:
     'Cobre as regiões das torres Wasteland e Gerudo: o deserto Gerudo com Gerudo Town e Kara Kara Bazaar, e as montanhas geladas das Gerudo Highlands. Calor extremo de dia, frio congelante à noite — uma das áreas com mais side quests do jogo.',
   koroksTotal: 105,
+  mapPos: { x: -2987, z: 2133, zoom: 3 },
   towers: [
     {
       id: 'tower_wasteland',
@@ -247,13 +248,6 @@ const gerudo: Region = {
       name: 'Sand seal (travessia do deserto)',
       detail:
         'Cavalos não entram no deserto — alugue um sand seal na loja ao lado do portão de Gerudo Town (20 rupees) e surfe segurando o escudo. Também dá pra se aproximar de sand seals selvagens agachado e montar de graça. Essencial pra alcançar os cantos distantes (Great Skeleton, labirinto, ruínas).',
-    },
-    {
-      id: 'gerudo_koroks_guide',
-      name: 'Koroks da região',
-      sub: 'Use o contador da região + mapa interativo',
-      detail:
-        'São centenas espalhados — inviável listar um a um. Use o mapa interativo objmap.zeldadungeon.net (camada Korok Seeds) e marque no contador abaixo conforme coletar.',
     },
   ],
 }

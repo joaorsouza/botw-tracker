@@ -7,6 +7,7 @@ const hebra: Region = {
   description:
     'Região da torre Hebra: as montanhas geladas do extremo noroeste de Hyrule, dominadas pelo Hebra Peak e cortadas por nevascas constantes. Abriga o North Lomei Labyrinth e vários santuários escondidos em cavernas — leve proteção contra frio extremo (nível 2).',
   koroksTotal: 73,
+  mapPos: { x: -2173, z: -2034, zoom: 4 },
   towers: [
     {
       id: 'tower_hebra',
@@ -132,13 +133,6 @@ const hebra: Region = {
       sub: 'Snowquill set / comidas spicy',
       detail:
         'Quase toda a região tem frio extremo (nível 2), que derrete vida sem proteção. Compre o set Snowquill na loja de armaduras de Rito Village (touca, túnica e calça — 2 peças bastam pro nível 2) ou cozinhe pratos/elixires com Spicy Pepper antes de subir. Armas flamejantes na mão também esquentam.',
-    },
-    {
-      id: 'hebra_koroks_guide',
-      name: 'Koroks da região',
-      sub: 'Use o contador da região + mapa interativo',
-      detail:
-        'São centenas espalhados — inviável listar um a um. Use o mapa interativo objmap.zeldadungeon.net (camada Korok Seeds) e marque no contador abaixo conforme coletar.',
     },
   ],
 }

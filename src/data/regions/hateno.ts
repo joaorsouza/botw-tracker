@@ -6,6 +6,7 @@ const hateno: Region = {
   name: 'Hateno / Necluda',
   description: 'Cobre as regiões das torres Dueling Peaks e Hateno: Kakariko Village, Hateno Village, os Dueling Peaks, a face sul do Monte Lanayru e a costa de Necluda. É a primeira grande área depois do Great Plateau, com muitos santuários fáceis e as vilas mais importantes do início do jogo.',
   koroksTotal: 129,
+  mapPos: { x: 1877, z: 1924, zoom: 3 },
   towers: [
     {
       id: 'tower_dueling_peaks',
@@ -251,12 +252,6 @@ const hateno: Region = {
       id: 'link_house',
       name: 'Casa do Link em Hateno',
       detail: 'A casa perto da ponte que a Bolson Construction ia demolir — compre por 3.000 rupees + 30 feixes de madeira (side quest Hylian Homeowner). Vire seu ponto de apoio: cama grátis, suportes para exibir armas, arcos e escudos, e vizinhança segura. Pré-requisito para From the Ground Up.',
-    },
-    {
-      id: 'hateno_koroks_guide',
-      name: 'Koroks da região',
-      sub: 'Use o contador da região + mapa interativo',
-      detail: 'São centenas espalhados — inviável listar um a um. Use o mapa interativo objmap.zeldadungeon.net (camada Korok Seeds) e marque no contador abaixo conforme coletar.',
     },
   ],
 }

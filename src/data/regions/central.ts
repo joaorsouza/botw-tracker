@@ -6,6 +6,7 @@ const central: Region = {
   name: 'Central Hyrule / Deep Akkala',
   description: 'Cobre as tower regions Central Hyrule (Hyrule Field, Hyrule Castle) e Woodland (Great Hyrule Forest / Korok Forest). Os santuários de Deep Akkala estão listados na seção Akkala — aqui ficam só os itens de Central + Woodland.',
   koroksTotal: 148,
+  mapPos: { x: 48, z: -582, zoom: 3 },
   towers: [
     { id: 'tower_central', name: 'Central Tower', detail: 'Fica no meio do Hyrule Field, numa área infestada de Guardians (Stalkers patrulhando e Decayed no chão). Aproxime usando as ruínas e muros como cobertura, de preferência pelo lado oeste/sudoeste, e escale rápido — no topo nenhum laser te alcança. Escudo com parry perfeito ou Ancient Arrows resolvem os Stalkers, mas fugir e escalar é totalmente viável.' },
     { id: 'tower_woodland', name: 'Woodland Tower', detail: 'Fica ao norte da Woodland Stable, ao lado do Pico Pond, com a base cercada por pântano que te afunda. Pule pelas ilhotas de terra firme e raízes até a base e escale. À noite aparecem inimigos Stal na área — de dia é bem mais tranquilo.' },
@@ -52,7 +53,6 @@ const central: Region = {
     { id: 'hylian_shield', name: 'Hylian Shield', sub: 'Hyrule Castle Lockup — derrotar o Stalnox', detail: 'Na prisão (Lockup) no subsolo oeste do Hyrule Castle, perto das docas. Derrote o Stalnox da última cela — acerte o olho com flechas e bata quando ele cair — e abra o baú: é o melhor escudo do jogo, com durabilidade absurda. Se quebrar depois, dá pra recomprar via side quest em Tarrey Town.' },
     { id: 'castle_loot', name: 'Hyrule Castle — itens notáveis', sub: 'Royal Guard gear, biblioteca, Zelda\'s Study', detail: 'O castelo é a melhor "loja de armas" do jogo: Royal Guard sword/spear/bow e armas Royal nas salas internas (Guards\' Chamber, quartéis), a biblioteca com passagens secretas e as receitas reais (quest A Royal Recipe), e o Zelda\'s Study com o diário dela e a pesquisa da Silent Princess. Tudo respawna a cada Blood Moon — vale voltar sempre.' },
     { id: 'lost_woods_path', name: 'Lost Woods — caminho pra Korok Forest', detail: 'Entrando pelas ruínas ao norte da Woodland Tower, siga as tochas acesas até a área com dois braseiros. Dali, pegue uma tocha (ou observe qualquer fogo): a direção em que as brasas/fagulhas voam indica o caminho certo — siga elas passo a passo até sair na Korok Forest. Errar te teleporta pro início.' },
-    { id: 'central_koroks_guide', name: 'Koroks da região', sub: 'Use o contador da região + mapa interativo', detail: 'São centenas espalhados — inviável listar um a um. Use o mapa interativo objmap.zeldadungeon.net (camada Korok Seeds) e marque no contador abaixo conforme coletar.' },
   ],
 }
 

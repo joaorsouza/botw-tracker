@@ -7,6 +7,7 @@ const lanayru: Region = {
   description:
     'Região da torre Lanayru: cobre as Lanayru Wetlands, o Zora\'s Domain e o East Reservoir Lake. É o cenário da Divine Beast Vah Ruta e lar dos Zora — prepare-se pra muita chuva e escalada limitada no caminho.',
   koroksTotal: 60,
+  mapPos: { x: 2258, z: -109, zoom: 4 },
   towers: [
     {
       id: 'tower_lanayru',
@@ -148,13 +149,6 @@ const lanayru: Region = {
       sub: 'Referência — rastreado na seção Divine Beasts',
       detail:
         'A campanha do Zora\'s Domain culmina no East Reservoir Lake, enfrentando o Vah Ruta com o Sidon e depois o Waterblight Ganon lá dentro. Recompensa: Mipha\'s Grace. O progresso completo dessa Divine Beast é marcado na seção Divine Beasts do tracker.',
-    },
-    {
-      id: 'lanayru_koroks_guide',
-      name: 'Koroks da região',
-      sub: 'Use o contador da região + mapa interativo',
-      detail:
-        'São centenas espalhados — inviável listar um a um. Use o mapa interativo objmap.zeldadungeon.net (camada Korok Seeds) e marque no contador abaixo conforme coletar.',
     },
   ],
 }

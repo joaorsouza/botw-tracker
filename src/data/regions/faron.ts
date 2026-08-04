@@ -7,6 +7,7 @@ const faron: Region = {
   description:
     'Sul tropical de Hyrule, cobrindo as regiões das torres Faron e Lake: a vila pesqueira de Lurelin, a floresta tropical de Faron, o Lake Hylia, as planícies do Highland e a Eventide Island. Chuva quase constante na floresta atrapalha escalada — planeje rotas por estradas e morros baixos.',
   koroksTotal: 124,
+  mapPos: { x: 650, z: 3118, zoom: 3 },
   towers: [
     {
       id: 'tower_faron',
@@ -186,13 +187,6 @@ const faron: Region = {
       sub: 'Cloyne, na tenda de apostas da vila',
       detail:
         'Cloyne comanda um jogo de azar: pague 10, 50 ou 100 rupees e escolha um dos três baús — um deles paga mais do que você apostou. Bom pra tentar a sorte quando precisar de rupees (salve antes se quiser garantir). Aproveite a vila pra comprar peixe e usar as jangadas da praia nas quests locais.',
-    },
-    {
-      id: 'faron_koroks_guide',
-      name: 'Koroks da região',
-      sub: 'Use o contador da região + mapa interativo',
-      detail:
-        'São centenas espalhados — inviável listar um a um. Use o mapa interativo objmap.zeldadungeon.net (camada Korok Seeds) e marque no contador abaixo conforme coletar.',
     },
   ],
 }

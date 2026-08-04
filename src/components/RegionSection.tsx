@@ -1,21 +1,27 @@
 import { Fragment } from 'react';
-import { MapPin } from 'lucide-react';
-import type { BoolMap, Region } from '../types';
+import { MapPin, ExternalLink } from 'lucide-react';
+import type { BoolMap, KorokSeed, Region } from '../types';
 import Section from './Section';
 import CheckRow from './CheckRow';
 import SubHeading from './SubHeading';
 import KorokCounter from './KorokCounter';
+import KorokChecklist from './KorokChecklist';
 import ProgressBar from './ProgressBar';
 
 interface RegionSectionProps {
   region: Region;
   state: BoolMap;
   onToggleItem: (itemId: string) => void;
-  korokCount: number;
+  korokSeeds: KorokSeed[];
+  korokChecks: BoolMap;
+  onToggleKorok: (korokId: string) => void;
+  manualKorokCount: number;
   onKorokChange: (value: string) => void;
 }
 
-export default function RegionSection({ region, state, onToggleItem, korokCount, onKorokChange }: RegionSectionProps) {
+export default function RegionSection({
+  region, state, onToggleItem, korokSeeds, korokChecks, onToggleKorok, manualKorokCount, onKorokChange,
+}: RegionSectionProps) {
   const checklists = [
     { title: 'Quests', items: region.quests || [] },
     { title: 'Torres', items: region.towers },
@@ -23,10 +29,20 @@ export default function RegionSection({ region, state, onToggleItem, korokCount,
     { title: `Side Quests (${region.sidequests.filter(q => state[q.id]).length}/${region.sidequests.length})`, items: region.sidequests },
     { title: 'Memórias, itens e extras', items: region.extras },
   ];
+  // Monta um link do objmap já filtrado numa busca por IDs de korok (ex.: "korok:(P01 OR P02)").
+  const korokMapUrl = (terms: string[]) => {
+    const pos = region.mapPos ? `z${region.mapPos.zoom},${region.mapPos.x},${region.mapPos.z}` : 'z3,0,0';
+    const q = terms.length ? `korok:(${terms.join(' OR ')})` : 'Korok';
+    return `https://objmap.zeldamods.org/#/map/${pos}?q=${encodeURIComponent(q)}`;
+  };
+  const zonePrefixes = [...new Set(korokSeeds.map(s => s.id.replace(/[0-9]+$/, '')))].map(z => `${z}*`);
+  const checkedIds = korokSeeds.filter(s => korokChecks[s.id]).map(s => s.id);
+  const missingIds = korokSeeds.filter(s => !korokChecks[s.id]).map(s => s.id);
   const allItems = checklists.flatMap(c => c.items);
   const done = allItems.filter(i => state[i.id]).length;
   const total = allItems.length;
   const pct = total ? Math.round((done / total) * 100) : 0;
+  const checklistCount = checkedIds.length;
 
   return (
     <Section
@@ -55,7 +71,48 @@ export default function RegionSection({ region, state, onToggleItem, korokCount,
           </Fragment>
         )
       ))}
-      <KorokCounter value={korokCount} total={region.koroksTotal} onChange={onKorokChange} />
+      <KorokCounter
+        manualValue={manualKorokCount}
+        checklistCount={checklistCount}
+        total={korokSeeds.length || region.koroksTotal}
+        onChange={onKorokChange}
+      />
+      <div className="mt-3">
+        <KorokChecklist seeds={korokSeeds} state={korokChecks} onToggle={onToggleKorok} />
+      </div>
+      <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+        <a
+          href={korokMapUrl(zonePrefixes)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs text-amber-300/80 hover:text-amber-200 transition-colors"
+        >
+          <ExternalLink size={12} />
+          Todos os koroks da região no mapa (objmap)
+        </a>
+        {checklistCount > 0 && missingIds.length > 0 && (
+          <a
+            href={korokMapUrl(missingIds)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs text-red-300/80 hover:text-red-200 transition-colors"
+          >
+            <ExternalLink size={12} />
+            Os {missingIds.length} que faltam
+          </a>
+        )}
+        {checklistCount > 0 && (
+          <a
+            href={korokMapUrl(checkedIds)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs text-emerald-300/80 hover:text-emerald-200 transition-colors"
+          >
+            <ExternalLink size={12} />
+            Os {checklistCount} já pegos
+          </a>
+        )}
+      </div>
     </Section>
   );
 }
