@@ -35,6 +35,18 @@ export interface KorokSeed {
   hash: number;
 }
 
+/** Um baú datamined do overworld: conteúdo + posição + refs p/ deep-link no objmap. */
+export interface Chest {
+  hash: number;
+  map: string;
+  x: number;
+  z: number;
+  /** Conteúdo do baú (nome do item em inglês, como no jogo). */
+  name: string;
+  /** Tipo do baú (madeira/ferro/pedra/acampamento...). */
+  kind: string;
+}
+
 export type BoolMap = Record<string, boolean>;
 export type RegionCounts = Record<string, { koroks: number }>;
 export type RegionsState = Record<string, BoolMap>;

@@ -1,8 +1,9 @@
 import { useState, useEffect, type Dispatch, type SetStateAction } from 'react';
 import { Trophy, Sparkles } from 'lucide-react';
 import REGION_DATA from './data/regions';
-import { MAIN_QUESTS, DIVINE_BEASTS, DLC, TOTALS } from './data/gameData';
+import { MAIN_QUESTS, MAIN_QUEST_MIGRATION, BEAST_MIGRATION, DLC, TOTALS } from './data/gameData';
 import { KOROKS_BY_REGION } from './data/koroks';
+import { CHESTS_BY_REGION } from './data/chests';
 import type { BoolMap, Region, RegionCounts, RegionsState } from './types';
 import Section from './components/Section';
 import CheckRow from './components/CheckRow';
@@ -11,11 +12,11 @@ import RegionSection from './components/RegionSection';
 export default function App() {
   const [loaded, setLoaded] = useState(false);
   const [mainQuests, setMainQuests] = useState<BoolMap>({});
-  const [beasts, setBeasts] = useState<BoolMap>({});
   const [dlc, setDlc] = useState<BoolMap>({});
   const [regionCounts, setRegionCounts] = useState<RegionCounts>({});
   const [regions, setRegions] = useState<RegionsState>({});
   const [korokChecks, setKorokChecks] = useState<RegionsState>({});
+  const [chestChecks, setChestChecks] = useState<RegionsState>({});
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,12 +24,22 @@ export default function App() {
       const raw = localStorage.getItem('botw-progress');
       if (raw) {
         const data = JSON.parse(raw);
-        setMainQuests(data.mainQuests || {});
-        setBeasts(data.beasts || {});
+        // migra ids antigos da checklist genérica e da extinta seção Divine Beasts
+        const mainRaw: BoolMap = data.mainQuests || {};
+        const mainMigrated = { ...mainRaw };
+        for (const [oldId, newIds] of Object.entries(MAIN_QUEST_MIGRATION)) {
+          if (mainRaw[oldId]) for (const id of newIds) mainMigrated[id] = true;
+        }
+        const beastsRaw: BoolMap = data.beasts || {};
+        for (const [oldId, newId] of Object.entries(BEAST_MIGRATION)) {
+          if (beastsRaw[oldId]) mainMigrated[newId] = true;
+        }
+        setMainQuests(mainMigrated);
         setDlc(data.dlc || {});
         setRegionCounts(data.regionCounts || {});
         setRegions(data.regions || {});
         setKorokChecks(data.koroks || {});
+        setChestChecks(data.chests || {});
       }
     } catch {
       // no saved data yet, that's fine
@@ -39,12 +50,12 @@ export default function App() {
   useEffect(() => {
     if (!loaded) return;
     try {
-      localStorage.setItem('botw-progress', JSON.stringify({ mainQuests, beasts, dlc, regionCounts, regions, koroks: korokChecks }));
+      localStorage.setItem('botw-progress', JSON.stringify({ mainQuests, dlc, regionCounts, regions, koroks: korokChecks, chests: chestChecks }));
       setError(null);
     } catch (e) {
       setError('Não consegui salvar o progresso agora: ' + (e instanceof Error ? e.message : String(e)));
     }
-  }, [mainQuests, beasts, dlc, regionCounts, regions, korokChecks, loaded]);
+  }, [mainQuests, dlc, regionCounts, regions, korokChecks, chestChecks, loaded]);
 
   const toggle = (setter: Dispatch<SetStateAction<BoolMap>>, state: BoolMap, id: string) =>
     setter({ ...state, [id]: !state[id] });
@@ -67,6 +78,12 @@ export default function App() {
     setKorokChecks(prev => ({
       ...prev,
       [regionId]: { ...prev[regionId], [korokId]: !prev[regionId]?.[korokId] },
+    }));
+
+  const toggleChest = (regionId: string, chestId: string) =>
+    setChestChecks(prev => ({
+      ...prev,
+      [regionId]: { ...prev[regionId], [chestId]: !prev[regionId]?.[chestId] },
     }));
 
   // Contagem efetiva de koroks: se a região tem algum korok marcado no checklist,
@@ -126,13 +143,7 @@ export default function App() {
 
         <Section title="Progresso principal (história)" icon={<Trophy size={16} className="text-amber-400" />}>
           {MAIN_QUESTS.map(q => (
-            <CheckRow key={q.id} label={q.name} checked={!!mainQuests[q.id]} onToggle={() => toggle(setMainQuests, mainQuests, q.id)} />
-          ))}
-        </Section>
-
-        <Section title="Divine Beasts" icon={<Sparkles size={16} className="text-blue-400" />}>
-          {DIVINE_BEASTS.map(b => (
-            <CheckRow key={b.id} label={b.name} sub={b.note} checked={!!beasts[b.id]} onToggle={() => toggle(setBeasts, beasts, b.id)} />
+            <CheckRow key={q.id} label={q.name} sub={q.sub} detail={q.detail} checked={!!mainQuests[q.id]} onToggle={() => toggle(setMainQuests, mainQuests, q.id)} />
           ))}
         </Section>
 
@@ -152,6 +163,9 @@ export default function App() {
             korokSeeds={KOROKS_BY_REGION[region.id] || []}
             korokChecks={korokChecks[region.id] || {}}
             onToggleKorok={korokId => toggleKorok(region.id, korokId)}
+            chests={CHESTS_BY_REGION[region.id] || []}
+            chestChecks={chestChecks[region.id] || {}}
+            onToggleChest={chestId => toggleChest(region.id, chestId)}
             manualKorokCount={regionCounts[region.key]?.koroks || 0}
             onKorokChange={v => setKoroks(region.key, v)}
           />
