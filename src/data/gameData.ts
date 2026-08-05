@@ -1,4 +1,4 @@
-import type { ChecklistItem } from '../types';
+import type { BoolMap, ChecklistItem } from '../types';
 
 export interface SimpleItem {
   id: string;
@@ -100,21 +100,52 @@ export const MAIN_QUESTS: ChecklistItem[] = [
   },
 ];
 
-/** Migração de ids antigos da checklist genérica → quests reais equivalentes. */
-export const MAIN_QUEST_MIGRATION: Record<string, string[]> = {
+/**
+ * Versão do schema do save no localStorage. Incremente ao mudar o formato
+ * e trate a migração no load do App (guardada por `data.version`).
+ * v1 (implícita): checklist genérica de main quests + seção Divine Beasts.
+ * v2: 15 main quests reais; slices koroks/chests; sem `beasts`.
+ */
+export const SAVE_VERSION = 2;
+
+/** Migração de ids antigos da checklist genérica → quests reais equivalentes (save v1 → v2). */
+const MAIN_QUEST_MIGRATION: Record<string, string[]> = {
   plateau: ['mq_follow_sheikah_slate', 'mq_isolated_plateau'],
   beasts: ['mq_free_divine_beasts', 'mq_vah_ruta', 'mq_vah_naboris', 'mq_vah_rudania', 'mq_vah_medoh'],
   memories: ['mq_captured_memories'],
   ganon: ['mq_destroy_ganon'],
 };
 
-/** Migração da antiga seção "Divine Beasts" (slice `beasts`) → quests das feras. */
-export const BEAST_MIGRATION: Record<string, string> = {
+/** Migração da antiga seção "Divine Beasts" (slice `beasts`) → quests das feras (save v1 → v2). */
+const BEAST_MIGRATION: Record<string, string> = {
   ruta: 'mq_vah_ruta',
   naboris: 'mq_vah_naboris',
   rudania: 'mq_vah_rudania',
   medoh: 'mq_vah_medoh',
 };
+
+/**
+ * Devolve o mapa de main quests de um save, aplicando a migração v1 → v2 quando
+ * necessário: traduz a checklist genérica e a extinta seção Divine Beasts pras
+ * 15 quests reais, e apaga as chaves legadas (senão elas re-marcariam a quest
+ * a cada load, desfazendo unchecks do usuário).
+ */
+export function migrateMainQuests(data: { version?: number; mainQuests?: BoolMap; beasts?: BoolMap }): BoolMap {
+  const mainQuests = data.mainQuests || {};
+  if ((data.version ?? 1) >= 2) return mainQuests;
+
+  const migrated = { ...mainQuests };
+  for (const [oldId, newIds] of Object.entries(MAIN_QUEST_MIGRATION)) {
+    if (migrated[oldId]) for (const id of newIds) migrated[id] = true;
+    delete migrated[oldId];
+  }
+  delete migrated.towers;
+  delete migrated.castle;
+  for (const [oldId, newId] of Object.entries(BEAST_MIGRATION)) {
+    if (data.beasts?.[oldId]) migrated[newId] = true;
+  }
+  return migrated;
+}
 
 export const DLC: SimpleItem[] = [
   { id: 'trial', name: 'Trial of the Sword (Master Sword upgrade)' },

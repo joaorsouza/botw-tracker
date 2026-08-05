@@ -1,7 +1,7 @@
 import { useState, useEffect, type Dispatch, type SetStateAction } from 'react';
 import { Trophy, Sparkles } from 'lucide-react';
 import REGION_DATA from './data/regions';
-import { MAIN_QUESTS, MAIN_QUEST_MIGRATION, BEAST_MIGRATION, DLC, TOTALS } from './data/gameData';
+import { MAIN_QUESTS, DLC, TOTALS, SAVE_VERSION, migrateMainQuests } from './data/gameData';
 import { KOROKS_BY_REGION } from './data/koroks';
 import { CHESTS_BY_REGION } from './data/chests';
 import type { BoolMap, Region, RegionCounts, RegionsState } from './types';
@@ -24,17 +24,7 @@ export default function App() {
       const raw = localStorage.getItem('botw-progress');
       if (raw) {
         const data = JSON.parse(raw);
-        // migra ids antigos da checklist genérica e da extinta seção Divine Beasts
-        const mainRaw: BoolMap = data.mainQuests || {};
-        const mainMigrated = { ...mainRaw };
-        for (const [oldId, newIds] of Object.entries(MAIN_QUEST_MIGRATION)) {
-          if (mainRaw[oldId]) for (const id of newIds) mainMigrated[id] = true;
-        }
-        const beastsRaw: BoolMap = data.beasts || {};
-        for (const [oldId, newId] of Object.entries(BEAST_MIGRATION)) {
-          if (beastsRaw[oldId]) mainMigrated[newId] = true;
-        }
-        setMainQuests(mainMigrated);
+        setMainQuests(migrateMainQuests(data));
         setDlc(data.dlc || {});
         setRegionCounts(data.regionCounts || {});
         setRegions(data.regions || {});
@@ -50,7 +40,7 @@ export default function App() {
   useEffect(() => {
     if (!loaded) return;
     try {
-      localStorage.setItem('botw-progress', JSON.stringify({ mainQuests, dlc, regionCounts, regions, koroks: korokChecks, chests: chestChecks }));
+      localStorage.setItem('botw-progress', JSON.stringify({ version: SAVE_VERSION, mainQuests, dlc, regionCounts, regions, koroks: korokChecks, chests: chestChecks }));
       setError(null);
     } catch (e) {
       setError('Não consegui salvar o progresso agora: ' + (e instanceof Error ? e.message : String(e)));
@@ -120,7 +110,7 @@ export default function App() {
           <h1 className="text-2xl md:text-3xl font-bold text-amber-200 tracking-wide mb-1">
             Breath of the Wild — 100%
           </h1>
-          <p className="text-stone-400 text-sm"> VERSÃO BETA - Progresso salvo neste navegador</p>
+          <p className="text-stone-400 text-sm">VERSÃO BETA v{__APP_VERSION__} — Progresso salvo neste navegador</p>
         </div>
 
         <div className="bg-gradient-to-r from-amber-900/40 to-emerald-900/40 border border-amber-700/40 rounded-lg p-4 mb-5">
