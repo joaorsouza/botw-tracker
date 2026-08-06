@@ -2,6 +2,21 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Working with Claude on this repo
+
+- **Explain before acting.** Before creating or editing any file, running any
+  command, or applying a migration: describe what will change and why, then wait
+  for an explicit OK. This applies even to changes that look trivial.
+- **One step at a time.** Never batch several file changes into a single
+  unattended run. Show each file's content or diff, get approval, then move on.
+- **Destructive or outward-facing commands always need confirmation, every
+  time** — `git push`, `gh workflow run`, `npm version`, SQL against the
+  `production` branch, `vercel env`, anything that drops or deletes.
+- **State assumptions out loud.** Ambiguity becomes a question, never a silently
+  chosen default.
+- The goal here is understanding the architecture, not just shipping it — favour
+  explaining the *why* over moving fast.
+
 ## Commands
 
 ```bash
