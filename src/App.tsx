@@ -110,7 +110,7 @@ export default function App() {
           <h1 className="text-2xl md:text-3xl font-bold text-amber-200 tracking-wide mb-1">
             Breath of the Wild — 100%
           </h1>
-          <p className="text-stone-400 text-sm">VERSÃO BETA v{__APP_VERSION__} — Progresso salvo neste navegador</p>
+          <p className="text-stone-400 text-sm">v{__APP_VERSION__} — Progresso salvo neste navegador</p>
         </div>
 
         <div className="bg-gradient-to-r from-amber-900/40 to-emerald-900/40 border border-amber-700/40 rounded-lg p-4 mb-5">
