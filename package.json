@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "typecheck": "tsc --noEmit",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "release": "gh workflow run release.yml -f bump=minor",
+    "release:patch": "gh workflow run release.yml -f bump=patch"
   },
   "dependencies": {
     "lucide-react": "^0.383.0",
