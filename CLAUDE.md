@@ -17,14 +17,14 @@ There are no tests or linting configured.
 
 ## Releases & deploy
 
-Hosted on Vercel, connected to the GitHub repo (`joaorsouza/botw-tracker`): every push to `main` auto-deploys (`npm run build` runs `tsc` first, so type errors block the deploy; PR branches get preview URLs). To cut a release:
+Hosted on Vercel, connected to the GitHub repo (`joaorsouza/botw-tracker`). The Vercel **Production Branch is `release`**, not `main`: pushes to `main` only create preview deployments — production only changes on release. The `release` branch is machine-managed (never check it out or commit to it); it is fast-forwarded to `main`'s state by the release scripts via `git push origin main:release`. To cut a release:
 
 ```bash
-npm version minor   # or patch — bumps package.json, commits and tags in one step
-git push --follow-tags
+npm run release        # minor bump (new feature): version+tag+push+promote to production
+npm run release:patch  # patch bump (fix)
 ```
 
-The header version updates automatically from package.json (`__APP_VERSION__`). `SAVE_VERSION` (localStorage schema) is independent of the app version — bump it only on breaking save-format changes (see Persistence below).
+(`npm run build` runs `tsc` first, so type errors block any deploy.) The header version updates automatically from package.json (`__APP_VERSION__`). `SAVE_VERSION` (localStorage schema) is independent of the app version — bump it only on breaking save-format changes (see Persistence below).
 
 ## What this is
 
