@@ -21,7 +21,7 @@ Hosted on Vercel, connected to the GitHub repo (`joaorsouza/botw-tracker`). The 
 
 Branch model (GitHub rulesets enforce this — do not fight it):
 
-- **Work happens on feature branches** → PR into `main` (direct pushes to `main` are blocked; each branch/PR gets a Vercel preview URL).
+- **Work happens on feature branches** → PR into `main` (direct pushes to `main` are blocked; each branch/PR gets a Vercel preview URL). Commit messages are written in English (conventional commits).
 - **`main`** is the integration branch — always deployable, only receives merges via PR.
 - **`release`** is machine-managed: never check it out, commit to it, or push it. Only the Release GitHub Action (bypass-listed in the rulesets) can move it, via `git push origin main:release`.
 
