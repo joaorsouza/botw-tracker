@@ -21,11 +21,11 @@ Hosted on Vercel, connected to the GitHub repo (`joaorsouza/botw-tracker`). The 
 
 Branch model (GitHub rulesets enforce this — do not fight it):
 
-- **Work happens on feature branches** → PR into `main` (direct pushes to `main` are blocked; each branch/PR gets a Vercel preview URL).
+- **Work happens on feature branches** → PR into `main` (direct pushes to `main` are blocked; each branch/PR gets a Vercel preview URL). Commit messages are written in English (conventional commits).
 - **`main`** is the integration branch — always deployable, only receives merges via PR.
 - **`release`** is machine-managed: never check it out, commit to it, or push it. Only the Release GitHub Action (bypass-listed in the rulesets) can move it, via `git push origin main:release`.
 
-To cut a release: GitHub → **Actions → Release → Run workflow** (choose minor/patch/major), or `gh workflow run release.yml -f bump=minor`. The workflow ([.github/workflows/release.yml](.github/workflows/release.yml)) type-checks and builds, runs `npm version`, pushes the version commit + tag to `main` and promotes `main` → `release`. There is no local release command — `npm version` + manual push will be rejected by the ruleset.
+To cut a release: GitHub → **Actions → Release → Run workflow** (choose minor/patch/major), or from the terminal: `npm run release` (minor) / `npm run release:patch` — thin wrappers around `gh workflow run release.yml`; they only *trigger* the workflow, the release itself always runs on GitHub. The workflow ([.github/workflows/release.yml](.github/workflows/release.yml)) type-checks and builds, runs `npm version`, pushes the version commit + tag to `main` and promotes `main` → `release`. There is no local release command — `npm version` + manual push will be rejected by the ruleset.
 
 The header version updates automatically from package.json (`__APP_VERSION__`). `SAVE_VERSION` (localStorage schema) is independent of the app version — bump it only on breaking save-format changes (see Persistence below).
 
