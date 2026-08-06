@@ -1,0 +1,56 @@
+# Release: único caminho para produção.
+# Bumpa a versão (npm version), pusha commit+tag na main e promove main → release.
+# As branches main e release são protegidas por rulesets; este workflow está na
+# lista de bypass (app "GitHub Actions") — humanos não conseguem push direto.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Tipo de release'
+        required: true
+        default: 'minor'
+        type: choice
+        options:
+          - minor
+          - patch
+          - major
+
+permissions:
+  contents: write
+
+concurrency: release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Gate de release: tsc + build de produção precisam passar
+      - run: npm run build
+
+      - name: Configurar identidade do bot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump de versão + tag
+        run: npm version ${{ inputs.bump }}
+
+      - name: Push na main (commit de versão + tag)
+        run: git push --follow-tags origin main
+
+      - name: Promover para produção (release)
+        run: git push origin main:release

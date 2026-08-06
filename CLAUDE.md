@@ -17,14 +17,17 @@ There are no tests or linting configured.
 
 ## Releases & deploy
 
-Hosted on Vercel, connected to the GitHub repo (`joaorsouza/botw-tracker`). The Vercel **Production Branch is `release`**, not `main`: pushes to `main` only create preview deployments — production only changes on release. The `release` branch is machine-managed (never check it out or commit to it); it is fast-forwarded to `main`'s state by the release scripts via `git push origin main:release`. To cut a release:
+Hosted on Vercel, connected to the GitHub repo (`joaorsouza/botw-tracker`). The Vercel **Production Branch is `release`**, not `main`: pushes to `main` only create preview deployments — production only changes on release.
 
-```bash
-npm run release        # minor bump (new feature): version+tag+push+promote to production
-npm run release:patch  # patch bump (fix)
-```
+Branch model (GitHub rulesets enforce this — do not fight it):
 
-(`npm run build` runs `tsc` first, so type errors block any deploy.) The header version updates automatically from package.json (`__APP_VERSION__`). `SAVE_VERSION` (localStorage schema) is independent of the app version — bump it only on breaking save-format changes (see Persistence below).
+- **Work happens on feature branches** → PR into `main` (direct pushes to `main` are blocked; each branch/PR gets a Vercel preview URL).
+- **`main`** is the integration branch — always deployable, only receives merges via PR.
+- **`release`** is machine-managed: never check it out, commit to it, or push it. Only the Release GitHub Action (bypass-listed in the rulesets) can move it, via `git push origin main:release`.
+
+To cut a release: GitHub → **Actions → Release → Run workflow** (choose minor/patch/major), or `gh workflow run release.yml -f bump=minor`. The workflow ([.github/workflows/release.yml](.github/workflows/release.yml)) type-checks and builds, runs `npm version`, pushes the version commit + tag to `main` and promotes `main` → `release`. There is no local release command — `npm version` + manual push will be rejected by the ruleset.
+
+The header version updates automatically from package.json (`__APP_VERSION__`). `SAVE_VERSION` (localStorage schema) is independent of the app version — bump it only on breaking save-format changes (see Persistence below).
 
 ## What this is
 
