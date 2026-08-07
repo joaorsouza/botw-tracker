@@ -12,6 +12,10 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    // Sem isto, todo pacote @types/* instalado entra como global aqui — e o
+    // @types/node do backend faria `process` e `Buffer` parecerem existir no
+    // navegador. Referências explícitas (vite/client) não são afetadas.
+    "types": [],
 
     "strict": true,
     "noUnusedLocals": true,

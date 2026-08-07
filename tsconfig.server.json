@@ -1,0 +1,24 @@
+{
+  // Type-check do backend (Vercel Functions). Separado do tsconfig do frontend
+  // porque as duas metades rodam em ambientes diferentes: aqui não existe DOM,
+  // lá não existe Node. O `npm run typecheck` roda os dois.
+  "compilerOptions": {
+    "target": "ES2022",
+    // Sem "DOM" de propósito: `window`/`localStorage` num arquivo de servidor
+    // deve falhar em compilação, não em produção.
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["node"],
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["api", "server"]
+}
