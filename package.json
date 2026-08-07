@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && vite build",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.server.json",
     "preview": "vite preview",
     "release": "gh workflow run release.yml -f bump=minor",
     "release:patch": "gh workflow run release.yml -f bump=patch"
@@ -17,6 +17,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@types/node": "^20.19.43",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^4.3.1",
