@@ -1,80 +1,17 @@
-import { useState, useEffect, type Dispatch, type SetStateAction } from 'react';
 import { Trophy, Sparkles } from 'lucide-react';
 import REGION_DATA from './data/regions';
-import { MAIN_QUESTS, DLC, TOTALS, SAVE_VERSION, migrateMainQuests } from './data/gameData';
+import { MAIN_QUESTS, DLC, TOTALS } from './data/gameData';
 import { KOROKS_BY_REGION } from './data/koroks';
 import { CHESTS_BY_REGION } from './data/chests';
-import type { BoolMap, Region, RegionCounts, RegionsState } from './types';
+import type { Region } from './types';
+import { useProgress } from './hooks/useProgress';
 import Section from './components/Section';
 import CheckRow from './components/CheckRow';
 import RegionSection from './components/RegionSection';
 
 export default function App() {
-  const [loaded, setLoaded] = useState(false);
-  const [mainQuests, setMainQuests] = useState<BoolMap>({});
-  const [dlc, setDlc] = useState<BoolMap>({});
-  const [regionCounts, setRegionCounts] = useState<RegionCounts>({});
-  const [regions, setRegions] = useState<RegionsState>({});
-  const [korokChecks, setKorokChecks] = useState<RegionsState>({});
-  const [chestChecks, setChestChecks] = useState<RegionsState>({});
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem('botw-progress');
-      if (raw) {
-        const data = JSON.parse(raw);
-        setMainQuests(migrateMainQuests(data));
-        setDlc(data.dlc || {});
-        setRegionCounts(data.regionCounts || {});
-        setRegions(data.regions || {});
-        setKorokChecks(data.koroks || {});
-        setChestChecks(data.chests || {});
-      }
-    } catch {
-      // no saved data yet, that's fine
-    }
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!loaded) return;
-    try {
-      localStorage.setItem('botw-progress', JSON.stringify({ version: SAVE_VERSION, mainQuests, dlc, regionCounts, regions, koroks: korokChecks, chests: chestChecks }));
-      setError(null);
-    } catch (e) {
-      setError('Não consegui salvar o progresso agora: ' + (e instanceof Error ? e.message : String(e)));
-    }
-  }, [mainQuests, dlc, regionCounts, regions, korokChecks, chestChecks, loaded]);
-
-  const toggle = (setter: Dispatch<SetStateAction<BoolMap>>, state: BoolMap, id: string) =>
-    setter({ ...state, [id]: !state[id] });
-
-  const toggleRegionItem = (regionId: string, itemId: string) =>
-    setRegions(prev => ({
-      ...prev,
-      [regionId]: { ...prev[regionId], [itemId]: !prev[regionId]?.[itemId] },
-    }));
-
-  const setKoroks = (regionKey: string, value: string) => {
-    const num = Math.max(0, Math.min(TOTALS.koroks, parseInt(value) || 0));
-    setRegionCounts(prev => ({
-      ...prev,
-      [regionKey]: { ...prev[regionKey], koroks: num },
-    }));
-  };
-
-  const toggleKorok = (regionId: string, korokId: string) =>
-    setKorokChecks(prev => ({
-      ...prev,
-      [regionId]: { ...prev[regionId], [korokId]: !prev[regionId]?.[korokId] },
-    }));
-
-  const toggleChest = (regionId: string, chestId: string) =>
-    setChestChecks(prev => ({
-      ...prev,
-      [regionId]: { ...prev[regionId], [chestId]: !prev[regionId]?.[chestId] },
-    }));
+  const { loaded, error, state, actions } = useProgress();
+  const { mainQuests, dlc, regionCounts, regions, korokChecks, chestChecks } = state;
 
   // Contagem efetiva de koroks: se a região tem algum korok marcado no checklist,
   // vale o checklist; senão, vale o número digitado manualmente.
@@ -133,13 +70,13 @@ export default function App() {
 
         <Section title="Progresso principal (história)" icon={<Trophy size={16} className="text-amber-400" />}>
           {MAIN_QUESTS.map(q => (
-            <CheckRow key={q.id} label={q.name} sub={q.sub} detail={q.detail} checked={!!mainQuests[q.id]} onToggle={() => toggle(setMainQuests, mainQuests, q.id)} />
+            <CheckRow key={q.id} label={q.name} sub={q.sub} detail={q.detail} checked={!!mainQuests[q.id]} onToggle={() => actions.toggleMainQuest(q.id)} />
           ))}
         </Section>
 
         <Section title="DLC (Expansion Pass)" icon={<Sparkles size={16} className="text-purple-400" />}>
           {DLC.map(d => (
-            <CheckRow key={d.id} label={d.name} checked={!!dlc[d.id]} onToggle={() => toggle(setDlc, dlc, d.id)} />
+            <CheckRow key={d.id} label={d.name} checked={!!dlc[d.id]} onToggle={() => actions.toggleDlc(d.id)} />
           ))}
         </Section>
 
@@ -149,15 +86,15 @@ export default function App() {
             key={region.id}
             region={region}
             state={regions[region.id] || {}}
-            onToggleItem={itemId => toggleRegionItem(region.id, itemId)}
+            onToggleItem={itemId => actions.toggleRegionItem(region.id, itemId)}
             korokSeeds={KOROKS_BY_REGION[region.id] || []}
             korokChecks={korokChecks[region.id] || {}}
-            onToggleKorok={korokId => toggleKorok(region.id, korokId)}
+            onToggleKorok={korokId => actions.toggleKorok(region.id, korokId)}
             chests={CHESTS_BY_REGION[region.id] || []}
             chestChecks={chestChecks[region.id] || {}}
-            onToggleChest={chestId => toggleChest(region.id, chestId)}
+            onToggleChest={chestId => actions.toggleChest(region.id, chestId)}
             manualKorokCount={regionCounts[region.key]?.koroks || 0}
-            onKorokChange={v => setKoroks(region.key, v)}
+            onKorokChange={v => actions.setKoroks(region.key, v)}
           />
         ))}
 
