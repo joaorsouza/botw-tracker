@@ -12,6 +12,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Destructive or outward-facing commands always need confirmation, every
   time** — `git push`, `gh workflow run`, `npm version`, SQL against the
   `production` branch, `vercel env`, anything that drops or deletes.
+- **Every database change gets documented.** Any new modeling or schema change
+  — table, column, constraint, index, migration — must be reflected in
+  [db/README.md](db/README.md) in the same PR that introduces it: the *why* and
+  the alternatives rejected, not just the *what*. The SQL comments stay the
+  source of truth for the schema itself; the README is the record of decisions.
 - **State assumptions out loud.** Ambiguity becomes a question, never a silently
   chosen default.
 - The goal here is understanding the architecture, not just shipping it — favour

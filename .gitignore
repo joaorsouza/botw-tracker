@@ -5,3 +5,6 @@ dist
 .env.*
 !.env.example
 .vercel
+# Rascunhos locais: harnesses de teste, scripts descartáveis, artefatos gerados.
+# Nada aqui entra no repo — se algo ganhar valor permanente, promova pra fora.
+scratch/
