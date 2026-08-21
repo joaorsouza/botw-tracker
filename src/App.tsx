@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Trophy, Sparkles } from 'lucide-react';
 import REGION_DATA from './data/regions';
 import { MAIN_QUESTS, DLC, TOTALS } from './data/gameData';
@@ -5,12 +6,16 @@ import { KOROKS_BY_REGION } from './data/koroks';
 import { CHESTS_BY_REGION } from './data/chests';
 import type { Region } from './types';
 import { useProgress } from './hooks/useProgress';
+import { authClient } from './auth/client';
 import Section from './components/Section';
 import CheckRow from './components/CheckRow';
 import RegionSection from './components/RegionSection';
+import AuthModal from './components/AuthModal';
+import UserMenu from './components/UserMenu';
 
 export default function App() {
   const { loaded, error, state, actions } = useProgress();
+  const [authOpen, setAuthOpen] = useState(false);
   const { mainQuests, dlc, regionCounts, regions, korokChecks, chestChecks } = state;
 
   // Contagem efetiva de koroks: se a região tem algum korok marcado no checklist,
@@ -43,7 +48,12 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-stone-950 to-stone-900 text-stone-100 p-4 md:p-8 font-sans">
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-6">
+        <div className="relative text-center mb-6">
+          {authClient && (
+            <div className="absolute right-0 top-0">
+              <UserMenu auth={authClient} onLoginClick={() => setAuthOpen(true)} />
+            </div>
+          )}
           <h1 className="text-2xl md:text-3xl font-bold text-amber-200 tracking-wide mb-1">
             Breath of the Wild — 100%
           </h1>
@@ -98,7 +108,7 @@ export default function App() {
           />
         ))}
 
-        
+        <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
       </div>
     </div>
   );
