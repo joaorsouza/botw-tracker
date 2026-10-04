@@ -21,6 +21,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   chosen default.
 - The goal here is understanding the architecture, not just shipping it — favour
   explaining the *why* over moving fast.
+- **The cloud sync plan lives in [docs/plano-sync.md](docs/plano-sync.md).**
+  It is the original plan for the database + login + sync feature, kept as a
+  record. Read it before working on any PR in that sequence, and update the
+  status table at its top in the same PR.
 
 ## Commands
 
