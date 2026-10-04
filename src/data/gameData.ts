@@ -102,11 +102,13 @@ export const MAIN_QUESTS: ChecklistItem[] = [
 
 /**
  * Versão do schema do save no localStorage. Incremente ao mudar o formato
- * e trate a migração no load do App (guardada por `data.version`).
+ * e trate a migração em `localStorageAdapter.read()` (src/storage/local.ts),
+ * guardada por `data.version`.
  * v1 (implícita): checklist genérica de main quests + seção Divine Beasts.
  * v2: 15 main quests reais; slices koroks/chests; sem `beasts`.
+ * v3: carimbo de tempo por item (`ts`), `baselineTs`, `lastPushedAt`.
  */
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
 /** Migração de ids antigos da checklist genérica → quests reais equivalentes (save v1 → v2). */
 const MAIN_QUEST_MIGRATION: Record<string, string[]> = {
