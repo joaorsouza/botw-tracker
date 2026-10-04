@@ -32,7 +32,7 @@ colunas novas.
 
 | Arquivo | O que faz | `dev` | `production` |
 | --- | --- | --- | --- |
-| [`0001_progress.sql`](migrations/0001_progress.sql) | tabelas `progress_meta` e `progress_item` | aplicada em 2026-08-07 | **pendente** |
+| [`0001_progress.sql`](migrations/0001_progress.sql) | tabelas `progress_meta` e `progress_item` | aplicada em 2026-08-07 | aplicada (constraints conferidas em 2026-09-01) |
 
 ## Modelagem do progresso
 
@@ -114,14 +114,45 @@ seria indistinguível de "nunca marcou" e o outro dispositivo remarcaria o item 
 próxima sincronização. A linha sobrevive para carregar o `updated_at` que prova
 *quando* foi desmarcada.
 
+## Como o PUT aplica um lote
+
+O lote inteiro (1..3000 deltas) vira **uma transação de duas statements**. O
+driver HTTP manda a transação de uma vez, sem lógica de aplicação entre as
+statements — essa restrição explica as duas decisões menos óbvias do desenho:
+
+**O teto de linhas vive dentro da própria statement.** "Contar, decidir no JS,
+depois inserir" seria um round-trip a mais e uma janela de corrida entre a
+contagem e o INSERT. Em vez disso, o guard é um
+`WHERE (SELECT total FROM capacity) <= 3000` na origem do INSERT: estourou o
+teto, o INSERT insere zero linhas e a transação inteira vira no-op. A primeira
+statement da transação recalcula o mesmo total apenas para o handler decidir
+entre `413 row_limit` e resposta normal — mesmo snapshot, números consistentes.
+
+**A resposta é `RETURNING` + snapshot, não um SELECT no final.** Dentro de uma
+statement, CTE com DML é invisível para o resto da query: um
+`SELECT ... FROM progress_item` no fim veria a tabela de *antes* do INSERT.
+Por isso o estado autoritativo devolvido ao cliente é montado em duas metades —
+`RETURNING` das linhas que gravaram, `UNION ALL` com a leitura do snapshot para
+as recusadas pela regra de conflito. Recusada = o servidor tinha carimbo mais
+novo, e "mais novo" está justamente no snapshot; o cliente adota tudo que
+voltar, sem saber quem ganhou.
+
+Mapa das CTEs, para quem for mexer na query ([api/progress.ts](../api/progress.ts)):
+`input` = o lote (`unnest` de arrays por coluna — SQL parametrizado não aceita
+"array de structs", então o handler transpõe o lote em 6 arrays paralelos);
+`capacity` = o freio; `applied` = o upsert com a regra de ouro
+(`WHERE EXCLUDED.updated_at > progress_item.updated_at`); `meta` = carona que
+mantém `progress_meta` (CTE com DML executa mesmo sem ninguém referenciá-la);
+SELECT final = aplicadas + recusadas. Cada bloco roda isolado no SQL Editor
+(`WITH input AS (...) SELECT * FROM input` com arrays de mentira) — é o jeito
+de depurar.
+
 ## O que ainda não está modelado
 
-- **`progress_meta` nunca recebe escrita** — ninguém insere nela ainda, então
-  `everSynced` responde `false` para todo mundo. Quem vai popular é o `PUT`.
-- **Só existe leitura** — o upsert com resolução por `updated_at` ainda não foi
-  escrito.
 - **Sem dispositivo, histórico ou auditoria** — a resolução de conflito é apenas
   "o `updated_at` mais recente vence", por item.
+- **O cliente ainda não escreve** — o `PUT` existe, mas nada no frontend o
+  chama; a fila de deltas e o merge do primeiro login são dos PRs 6a/6b.
 
 ## Ao mudar o banco
 

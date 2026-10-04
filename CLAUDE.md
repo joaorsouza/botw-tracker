@@ -17,6 +17,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   [db/README.md](db/README.md) in the same PR that introduces it: the *why* and
   the alternatives rejected, not just the *what*. The SQL comments stay the
   source of truth for the schema itself; the README is the record of decisions.
+- **Docs are part of the PR.** Before opening a PR, re-read the docs that
+  describe what the PR touched (CLAUDE.md architecture notes, db/README.md,
+  section comments) and fix anything the change made stale — statuses,
+  "not yet implemented" notes, decision records. A doc that lies is worse
+  than no doc.
 - **State assumptions out loud.** Ambiguity becomes a question, never a silently
   chosen default.
 - The goal here is understanding the architecture, not just shipping it — favour
