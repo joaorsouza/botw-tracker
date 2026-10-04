@@ -13,8 +13,8 @@
 | 2 | scaffold da API + type gate | mergeado (#4) |
 | 3 | `GET /api/progress` | mergeado (#5) |
 | 4 | login opcional no header | mergeado (#6), liberado na v1.2.0 em 2026-10-03 |
-| 5 | `PUT /api/progress` | aberto (#7) |
-| 6a | save v3 com timestamps por item | pendente |
+| 5 | `PUT /api/progress` | mergeado (#7) |
+| 6a | save v3 com timestamps por item. Desvios do plano: migração em `storage/local.ts` (não em gameData.ts); tradução `key → id` já em `storage/keys.ts` (não em `sync/regionKeys.ts` no 6b); lógica de mudança extraída para `storage/mutations.ts`; vitest começou aqui, cobrindo migração, chaves e mutações | aberto (#9) |
 | 6b | sync com a nuvem | pendente |
 | 7 | retry, offline e hardening de sessão | pendente |
 | 7b | proxy de auth na mesma origem | cancelado: o Safari/iOS manteve a sessão com cookie `SameSite=None; Partitioned` |
