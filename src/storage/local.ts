@@ -19,6 +19,20 @@ export interface ProgressState {
   regions: RegionsState;
   korokChecks: RegionsState;
   chestChecks: RegionsState;
+  /**
+   * Epoch ms da última mudança de cada item (marcar E desmarcar), indexado
+   * pela chave `kind:scope:itemId` de storage/keys.ts. É o que o sync usa
+   * para resolver conflito item a item (newest-wins).
+   */
+  ts: Record<string, number>;
+  /**
+   * Quando este save ganhou relógio (migração para v3). Item marcado sem
+   * entrada em `ts` é "legado": mudou em algum momento antes disso.
+   * 0 = não havia save para migrar, então não existe item legado.
+   */
+  baselineTs: number;
+  /** Último push bem-sucedido ao servidor (usado a partir do PR 6b). 0 = nunca. */
+  lastPushedAt: number;
 }
 
 export const EMPTY_PROGRESS: ProgressState = {
@@ -28,6 +42,9 @@ export const EMPTY_PROGRESS: ProgressState = {
   regions: {},
   korokChecks: {},
   chestChecks: {},
+  ts: {},
+  baselineTs: 0,
+  lastPushedAt: 0,
 };
 
 export interface ProgressStorage {
@@ -42,6 +59,10 @@ export const localStorageAdapter: ProgressStorage = {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const data = JSON.parse(raw);
+    // v1/v2 → v3: o save ainda não tinha relógio, então tudo que já está
+    // marcado vira legado, anterior a agora. Roda uma vez só: o write que
+    // segue a carga já grava v3 com o baselineTs fixado.
+    const hasClock = (data.version ?? 1) >= 3;
     return {
       mainQuests: migrateMainQuests(data),
       dlc: data.dlc || {},
@@ -49,6 +70,9 @@ export const localStorageAdapter: ProgressStorage = {
       regions: data.regions || {},
       korokChecks: data.koroks || {},
       chestChecks: data.chests || {},
+      ts: hasClock ? data.ts || {} : {},
+      baselineTs: hasClock ? data.baselineTs || 0 : Date.now(),
+      lastPushedAt: hasClock ? data.lastPushedAt || 0 : 0,
     };
   },
 
@@ -62,6 +86,9 @@ export const localStorageAdapter: ProgressStorage = {
       regions: state.regions,
       koroks: state.korokChecks,
       chests: state.chestChecks,
+      ts: state.ts,
+      baselineTs: state.baselineTs,
+      lastPushedAt: state.lastPushedAt,
     }));
   },
 };

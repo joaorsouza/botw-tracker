@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { TOTALS } from '../data/gameData';
 import {
   EMPTY_PROGRESS,
   localStorageAdapter,
   type ProgressState,
   type ProgressStorage,
 } from '../storage/local';
+import * as mutate from '../storage/mutations';
 
 export interface ProgressActions {
   toggleMainQuest(id: string): void;
@@ -46,50 +46,16 @@ export function useProgress(storage: ProgressStorage = localStorageAdapter) {
     }
   }, [state, loaded, storage]);
 
+  // A lógica de cada mudança vive em storage/mutations.ts (funções puras e
+  // testadas); aqui só entra o relógio e o setState.
   const actions = useMemo<ProgressActions>(() => ({
-    toggleMainQuest: id =>
-      setState(prev => ({ ...prev, mainQuests: { ...prev.mainQuests, [id]: !prev.mainQuests[id] } })),
-
-    toggleDlc: id =>
-      setState(prev => ({ ...prev, dlc: { ...prev.dlc, [id]: !prev.dlc[id] } })),
-
+    toggleMainQuest: id => setState(prev => mutate.toggleMainQuest(prev, id, Date.now())),
+    toggleDlc: id => setState(prev => mutate.toggleDlc(prev, id, Date.now())),
     toggleRegionItem: (regionId, itemId) =>
-      setState(prev => ({
-        ...prev,
-        regions: {
-          ...prev.regions,
-          [regionId]: { ...prev.regions[regionId], [itemId]: !prev.regions[regionId]?.[itemId] },
-        },
-      })),
-
-    setKoroks: (regionKey, value) => {
-      const num = Math.max(0, Math.min(TOTALS.koroks, parseInt(value) || 0));
-      setState(prev => ({
-        ...prev,
-        regionCounts: {
-          ...prev.regionCounts,
-          [regionKey]: { ...prev.regionCounts[regionKey], koroks: num },
-        },
-      }));
-    },
-
-    toggleKorok: (regionId, korokId) =>
-      setState(prev => ({
-        ...prev,
-        korokChecks: {
-          ...prev.korokChecks,
-          [regionId]: { ...prev.korokChecks[regionId], [korokId]: !prev.korokChecks[regionId]?.[korokId] },
-        },
-      })),
-
-    toggleChest: (regionId, chestId) =>
-      setState(prev => ({
-        ...prev,
-        chestChecks: {
-          ...prev.chestChecks,
-          [regionId]: { ...prev.chestChecks[regionId], [chestId]: !prev.chestChecks[regionId]?.[chestId] },
-        },
-      })),
+      setState(prev => mutate.toggleRegionItem(prev, regionId, itemId, Date.now())),
+    setKoroks: (regionKey, value) => setState(prev => mutate.setKoroks(prev, regionKey, value, Date.now())),
+    toggleKorok: (regionId, korokId) => setState(prev => mutate.toggleKorok(prev, regionId, korokId, Date.now())),
+    toggleChest: (regionId, chestId) => setState(prev => mutate.toggleChest(prev, regionId, chestId, Date.now())),
   }), []);
 
   return { loaded, error, state, actions };
